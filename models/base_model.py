@@ -10,8 +10,8 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         if kwargs:
             for key, value in kwargs.items():
-                if key == 'created_at' or key == 'updated_at':
-                    setattr(self, key, datetime.fromisoformat(value))
+                if key == '__class__':
+                    setattr(self, key, type(value))
                 else:
                     setattr(self, key, value)
         else:
@@ -23,20 +23,23 @@ class BaseModel:
         return f"[{class_name}] ({self.id}) {self.__dict__}"
 
     def validate(self):
-        """Validate the attributes of the object before saving."""
+        """Validates the attributes of the object before saving."""
         for key, value in self.__dict__.items():
             if key == 'name' and not value:
                 raise ValueError("Name cannot be empty")
             # add more validations here
 
+            if not isinstance(self.id, uuid.UUID):
+                raise ValueError("Id must be a valid UUID")
+
     def delete(self):
-        """Delete the object from the storage engine."""
+        """Deletes the object from the storage engine."""
         storage.delete(self)
 
     def to_dict(self, nested=False):
-        """Return a dictionary representation of the BaseModel object.
+        """Returns a dictionary representation of the BaseModel object.
 
-        If nested is True, include nested models as dictionaries.
+        If nested is True, includes nested models as dictionaries.
         """
         model_dict = self.__dict__.copy()
         model_dict['created_at'] = self.created_at.isoformat()
@@ -50,5 +53,11 @@ class BaseModel:
         return model_dict
 
     def save(self):
-        """Save the object to the storage engine."""
+        """Saves the object to the storage engine."""
+        self.updated_at = datetime.now()
         storage.save(self)
+
+    @classmethod
+    def from_dict(cls, model_dict):
+        """Creates a new BaseModel instance from a dictionary representation."""
+        return cls(**model_dict)
