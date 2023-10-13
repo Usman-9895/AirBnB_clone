@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 import uuid
 from datetime import datetime
-import models
+import models.engine.storage as storage
 
 
 # Create the BaseModel class
@@ -26,7 +27,7 @@ class BaseModel:
 
     def delete(self):
         """Delete the object from the storage engine."""
-        models.storage.delete(self)
+        storage.delete(self)
 
     def to_dict(self, nested=False):
         """Return a dictionary representation of the BaseModel object.
@@ -36,10 +37,14 @@ class BaseModel:
         model_dict = self.__dict__.copy()
         model_dict['created_at'] = self.created_at.isoformat()
         model_dict['updated_at'] = self.updated_at.isoformat()
-        model_dict['__class__'] = self.__class__.__name
+        model_dict['__class__'] = self.__class__.__name__
 
         if nested:
             if hasattr(self, 'children'):
                 model_dict['children'] = [c.to_dict() for c in self.children]
 
         return model_dict
+
+    def save(self):
+        """Save the object to the storage engine."""
+        storage.save(self)
