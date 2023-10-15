@@ -1,0 +1,10 @@
+{
+    "BaseModel.ef64f1af-1242-464e-88ce-c2a0ed975ac5": {
+        "__class__": "BaseModel",
+        "created_at": "2023-10-15T01:56:30.072512",
+        "id": "ef64f1af-1242-464e-88ce-c2a0ed975ac5",
+        "my_number": 89,
+        "name": "My First Model",
+        "updated_at": "2023-10-15T01:56:30.072828"
+    }
+}
